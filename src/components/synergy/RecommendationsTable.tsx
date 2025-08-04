@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ArrowUpDown } from 'lucide-react';
 
-type SortKey = keyof GrafguardGrade;
+type SortKey = keyof Omit<GrafguardGrade, 'description' | 'expansion400C' | 'expansion800C'>;
 
 interface RecommendationsTableProps {
   recommendedGrades: GrafguardGrade[];
@@ -18,9 +18,10 @@ interface RecommendationsTableProps {
   unit: 'C' | 'F';
   sortConfig: { key: SortKey; direction: 'ascending' | 'descending' } | null;
   requestSort: (key: SortKey) => void;
+  onGradeClick: (grade: GrafguardGrade) => void;
 }
 
-export function RecommendationsTable({ recommendedGrades, hoveredGrade, setHoveredGrade, unit, sortConfig, requestSort }: RecommendationsTableProps) {
+export function RecommendationsTable({ recommendedGrades, hoveredGrade, setHoveredGrade, unit, sortConfig, requestSort, onGradeClick }: RecommendationsTableProps) {
   if (recommendedGrades.length === 0) {
     return <p className="text-neograf-blue">No optimal GRAFGUARD® grades align with this synergist's temperature range. Consider an alternative synergist.</p>;
   }
@@ -29,7 +30,6 @@ export function RecommendationsTable({ recommendedGrades, hoveredGrade, setHover
     if (!sortConfig || sortConfig.key !== key) {
       return <ArrowUpDown className="ml-2 h-4 w-4 opacity-50" />;
     }
-    // You can enhance this to show specific up/down arrows
     return <ArrowUpDown className="ml-2 h-4 w-4" />;
   };
 
@@ -85,14 +85,15 @@ export function RecommendationsTable({ recommendedGrades, hoveredGrade, setHover
               <tr
                 key={grade.name}
                 className={cn(
-                  'border-t',
+                  'border-t cursor-pointer hover:bg-blue-50 transition-colors',
                   { 'bg-gray-50': index % 2 !== 0 },
                   { 'highlight-row': hoveredGrade === grade.name }
                 )}
                 onMouseEnter={() => setHoveredGrade(grade.name)}
                 onMouseLeave={() => setHoveredGrade(null)}
+                onClick={() => onGradeClick(grade)}
               >
-                <td className="p-2 font-medium">{grade.name}</td>
+                <td className="p-2 font-medium text-neograf-blue">{grade.name}</td>
                 <td className="p-2">{grade.particleSize} ({grade.mesh} Mesh)</td>
                 <td className="p-2">{unit === 'C' ? grade.onsetTempC : cToF(grade.onsetTempC)}°{unit}</td>
                 <td className="p-2">{grade.chemistry}</td>

@@ -2,7 +2,7 @@ import { Polymer, Synergist, GrafguardGrade } from '@/types';
 import { TemperatureChart } from './TemperatureChart';
 import { RecommendationsTable } from './RecommendationsTable';
 
-type SortKey = keyof GrafguardGrade;
+type SortKey = keyof Omit<GrafguardGrade, 'description' | 'expansion400C' | 'expansion800C'>;
 
 interface ResultsDisplayProps {
   polymer: Polymer;
@@ -13,9 +13,10 @@ interface ResultsDisplayProps {
   unit: 'C' | 'F';
   sortConfig: { key: SortKey; direction: 'ascending' | 'descending' } | null;
   requestSort: (key: SortKey) => void;
+  onGradeClick: (grade: GrafguardGrade) => void;
 }
 
-export function ResultsDisplay({ polymer, synergist, recommendedGrades, hoveredGrade, setHoveredGrade, unit, sortConfig, requestSort }: ResultsDisplayProps) {
+export function ResultsDisplay({ polymer, synergist, recommendedGrades, hoveredGrade, setHoveredGrade, unit, sortConfig, requestSort, onGradeClick }: ResultsDisplayProps) {
   const title = synergist.abbr === 'None' ? "Available GRAFGUARD® Grades" : "Optimal GRAFGUARD® Grades";
 
   return (
@@ -37,6 +38,7 @@ export function ResultsDisplay({ polymer, synergist, recommendedGrades, hoveredG
       <div className="mb-8">
         <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
           <h3 className="text-lg font-semibold mb-3 text-neograf-blue">{title}</h3>
+          <p className="text-sm text-gray-600 mb-4">Click on a grade row for more detailed information.</p>
           <div className="text-neograf-dark-gray overflow-x-auto">
             <RecommendationsTable
               recommendedGrades={recommendedGrades}
@@ -45,6 +47,7 @@ export function ResultsDisplay({ polymer, synergist, recommendedGrades, hoveredG
               unit={unit}
               sortConfig={sortConfig}
               requestSort={requestSort}
+              onGradeClick={onGradeClick}
             />
           </div>
         </div>

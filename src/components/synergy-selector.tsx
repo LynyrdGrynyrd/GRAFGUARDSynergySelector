@@ -13,8 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { GradeDetailModal } from './synergy/GradeDetailModal';
+import { cn } from '@/lib/utils';
 
-type SortKey = keyof GrafguardGrade;
+type SortKey = keyof Omit<GrafguardGrade, 'description' | 'expansion400C' | 'expansion800C'>;
 
 export function SynergySelector() {
   const [polymerId, setPolymerId] = useState<string>('');
@@ -22,6 +24,8 @@ export function SynergySelector() {
   const [hoveredGrade, setHoveredGrade] = useState<string | null>(null);
   const [unit, setUnit] = useState<'C' | 'F'>('C');
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'ascending' | 'descending' } | null>({ key: 'name', direction: 'ascending' });
+  const [selectedGrade, setSelectedGrade] = useState<GrafguardGrade | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const sortedPolymers = useMemo(() => 
     [...synergyData.polymers].sort((a, b) => a.name.localeCompare(b.name)), 
@@ -60,6 +64,9 @@ export function SynergySelector() {
         const aValue = a[sortConfig.key];
         const bValue = b[sortConfig.key];
 
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return sortConfig.direction === 'ascending' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        }
         if (aValue < bValue) {
           return sortConfig.direction === 'ascending' ? -1 : 1;
         }
@@ -83,7 +90,7 @@ export function SynergySelector() {
 
   const handlePolymerChange = (value: string) => {
     setPolymerId(value);
-    setSynergistId(''); // Reset synergist when polymer changes
+    setSynergistId('');
   };
 
   const handleSynergistChange = (value: string) => {
@@ -95,13 +102,23 @@ export function SynergySelector() {
     setSynergistId('');
   };
 
+  const handleGradeClick = (grade: GrafguardGrade) => {
+    setSelectedGrade(grade);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    // Delay clearing grade to allow for exit animation
+    setTimeout(() => setSelectedGrade(null), 300);
+  };
+
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <Header />
       <EducationalSection />
 
       <div className="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-        {/* Step 1 & 2: User Inputs */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 items-end">
           <div>
             <label htmlFor="polymer-select" className="block text-sm font-medium mb-1">Step 1: Select Your Polymer System</label>
@@ -121,7 +138,7 @@ export function SynergySelector() {
             <Select onValueChange={handleSynergistChange} value={synergistId} disabled={!polymerId}>
               <SelectTrigger id="synergist-select" className="w-full p-3 h-auto bg-gray-100 border-gray-300 focus:ring-2 ring-neograf-blue focus:border-neograf-blue transition">
                 <SelectValue placeholder="-- Please select --" />
-              </Trigger>
+              </SelectTrigger>
               <SelectContent>
                 {sortedSynergists.map(([key, synergist]) => (
                   <SelectItem key={key} value={key}>{synergist.name}</SelectItem>
@@ -132,16 +149,15 @@ export function SynergySelector() {
         </div>
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center space-x-2">
-            <Label htmlFor="temp-unit" className={cn({ 'font-bold': unit === 'C' })}>°C</Label>
+            <Label htmlFor="temp-unit" className={cn("text-gray-600", { 'font-bold text-neograf-dark-gray': unit === 'C' })}>°C</Label>
             <Switch id="temp-unit" checked={unit === 'F'} onCheckedChange={(checked) => setUnit(checked ? 'F' : 'C')} />
-            <Label htmlFor="temp-unit" className={cn({ 'font-bold': unit === 'F' })}>°F</Label>
+            <Label htmlFor="temp-unit" className={cn("text-gray-600", { 'font-bold text-neograf-dark-gray': unit === 'F' })}>°F</Label>
           </div>
           <Button onClick={resetTool} className="px-4 py-2 bg-neograf-dark-gray text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition shadow">
             Reset Selections
           </Button>
         </div>
 
-        {/* Step 3: Results Display */}
         {polymerId && synergistId ? (
           <div className="fade-in">
             <ResultsDisplay
@@ -153,6 +169,7 @@ export function SynergySelector() {
               unit={unit}
               sortConfig={sortConfig}
               requestSort={requestSort}
+              onGradeClick={handleGradeClick}
             />
             <Guidelines />
             <Resources />
@@ -164,6 +181,11 @@ export function SynergySelector() {
         )}
       </div>
       <Footer />
+      <GradeDetailModal
+        grade={selectedGrade}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+      />
     </div>
   );
 }

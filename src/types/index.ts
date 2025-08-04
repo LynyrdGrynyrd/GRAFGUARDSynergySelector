@@ -19,7 +19,10 @@ export interface GrafguardGrade {
   particleSize: string;
   mesh: string;
   chemistry: string;
-  expansion: number;
+  expansion: number; // Note: This is expansion at 600°C
+  description: string;
+  expansion400C: number;
+  expansion800C: number;
 }
 
 export interface SynergyData {
