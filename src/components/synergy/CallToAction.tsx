@@ -5,7 +5,7 @@ export function CallToAction() {
   return (
     <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200 text-center">
       <h2 className="text-2xl font-bold text-neograf-dark-gray mb-2">
-        Ready to Solve Your Thermal Challenge?
+        Ready to Solve Your FR Challenge?
       </h2>
       <p className="text-gray-600 max-w-xl mx-auto">
         This tool provides a starting point. Our application engineers can help you select the perfect material for your specific design.
