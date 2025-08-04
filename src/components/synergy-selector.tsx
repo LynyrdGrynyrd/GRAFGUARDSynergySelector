@@ -3,7 +3,7 @@
 import { Header } from '@/components/synergy/Header';
 import { EducationalSection } from '@/components/synergy/EducationalSection';
 import { Guidelines } from '@/components/synergy/Guidelines';
-import { Resources } from '@/components/synergy/Resources';
+import { CallToAction } from '@/components/synergy/CallToAction';
 import { Footer } from '@/components/synergy/Footer';
 import { ResultsDisplay } from '@/components/synergy/ResultsDisplay';
 import { GradeDetailModal } from './synergy/GradeDetailModal';
@@ -69,10 +69,8 @@ export function SynergySelector() {
           />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Guidelines />
-          <Resources />
-        </div>
+        <Guidelines />
+        <CallToAction />
       </div>
 
       <Footer />
