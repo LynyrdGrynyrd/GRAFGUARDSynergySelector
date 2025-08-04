@@ -39,7 +39,7 @@ export function ResultsDisplay({ polymer, synergist, recommendedGrades, hoveredG
   }
 
   return (
-    <div>
+    <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
       <h2 className="text-2xl font-semibold text-neograf-dark-gray mb-6 border-b pb-3">Synergy Analysis & Recommendations</h2>
       
       {polymer && synergist && (
@@ -57,7 +57,7 @@ export function ResultsDisplay({ polymer, synergist, recommendedGrades, hoveredG
       )}
 
       <div className="mb-8">
-        <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
+        <div className="bg-blue-50 p-4 sm:p-6 rounded-xl border border-blue-200">
           <h3 className="text-lg font-semibold mb-3 text-neograf-blue">{getTitle()}</h3>
           <p className="text-sm text-gray-600 mb-4">{getDescription()}</p>
           <div className="text-neograf-dark-gray overflow-x-auto">

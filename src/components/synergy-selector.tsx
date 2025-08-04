@@ -9,12 +9,8 @@ import { Guidelines } from '@/components/synergy/Guidelines';
 import { Resources } from '@/components/synergy/Resources';
 import { Footer } from '@/components/synergy/Footer';
 import { ResultsDisplay } from '@/components/synergy/ResultsDisplay';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { GradeDetailModal } from './synergy/GradeDetailModal';
-import { cn } from '@/lib/utils';
+import { ControlPanel } from './synergy/ControlPanel';
 
 type SortKey = keyof Omit<GrafguardGrade, 'description' | 'expansion400C' | 'expansion800C'>;
 
@@ -52,13 +48,10 @@ export function SynergySelector() {
     let available: GrafguardGrade[];
 
     if (!selectedPolymer) {
-      // No polymer selected, show all grades.
       available = [...synergyData.grafguardGrades];
     } else {
-      // Polymer selected, filter by processing temp.
       available = synergyData.grafguardGrades.filter(grade => grade.onsetTempC >= selectedPolymer.processingTempMaxC);
       
-      // If synergist is also selected (and not 'none'), filter further.
       if (selectedSynergist && synergistId && synergistId !== 'none') {
         available = available.filter(grade => 
           grade.onsetTempC >= selectedSynergist.decompMinC && grade.onsetTempC <= selectedSynergist.decompMaxC
@@ -104,6 +97,10 @@ export function SynergySelector() {
     setSynergistId(value);
   };
 
+  const handleUnitChange = (checked: boolean) => {
+    setUnit(checked ? 'F' : 'C');
+  };
+
   const resetTool = () => {
     setPolymerId('');
     setSynergistId('');
@@ -116,7 +113,6 @@ export function SynergySelector() {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    // Delay clearing grade to allow for exit animation
     setTimeout(() => setSelectedGrade(null), 300);
   };
 
@@ -125,47 +121,24 @@ export function SynergySelector() {
       <Header />
       <EducationalSection />
 
-      <div className="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 items-end">
-          <div>
-            <label htmlFor="polymer-select" className="block text-sm font-medium mb-1">Step 1: Select Your Polymer System</label>
-            <Select onValueChange={handlePolymerChange} value={polymerId}>
-              <SelectTrigger id="polymer-select" className="w-full p-3 h-auto bg-gray-100 border-gray-300 focus:ring-2 ring-neograf-blue focus:border-neograf-blue transition">
-                <SelectValue placeholder="-- Please select --" />
-              </SelectTrigger>
-              <SelectContent>
-                {sortedPolymers.map(polymer => (
-                  <SelectItem key={polymer.id} value={polymer.id}>{polymer.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label htmlFor="synergist-select" className="block text-sm font-medium mb-1">Step 2: Select Your Primary Synergist</label>
-            <Select onValueChange={handleSynergistChange} value={synergistId} disabled={!polymerId}>
-              <SelectTrigger id="synergist-select" className="w-full p-3 h-auto bg-gray-100 border-gray-300 focus:ring-2 ring-neograf-blue focus:border-neograf-blue transition">
-                <SelectValue placeholder="-- Please select --" />
-              </SelectTrigger>
-              <SelectContent>
-                {sortedSynergists.map(([key, synergist]) => (
-                  <SelectItem key={key} value={key}>{synergist.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="temp-unit" className={cn("text-gray-600", { 'font-bold text-neograf-dark-gray': unit === 'C' })}>°C</Label>
-            <Switch id="temp-unit" checked={unit === 'F'} onCheckedChange={(checked) => setUnit(checked ? 'F' : 'C')} />
-            <Label htmlFor="temp-unit" className={cn("text-gray-600", { 'font-bold text-neograf-dark-gray': unit === 'F' })}>°F</Label>
-          </div>
-          <Button onClick={resetTool} className="px-4 py-2 bg-neograf-dark-gray text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition shadow">
-            Reset Selections
-          </Button>
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+        <aside className="lg:col-span-1 space-y-8">
+          <ControlPanel
+            polymerId={polymerId}
+            synergistId={synergistId}
+            unit={unit}
+            sortedPolymers={sortedPolymers}
+            sortedSynergists={sortedSynergists}
+            handlePolymerChange={handlePolymerChange}
+            handleSynergistChange={handleSynergistChange}
+            onUnitChange={handleUnitChange}
+            resetTool={resetTool}
+          />
+          <Guidelines />
+          <Resources />
+        </aside>
 
-        <div className="fade-in">
+        <main className="lg:col-span-2">
           <ResultsDisplay
             polymer={selectedPolymer}
             synergist={selectedSynergist}
@@ -177,10 +150,9 @@ export function SynergySelector() {
             requestSort={requestSort}
             onGradeClick={handleGradeClick}
           />
-          <Guidelines />
-          <Resources />
-        </div>
+        </main>
       </div>
+
       <Footer />
       <GradeDetailModal
         grade={selectedGrade}
