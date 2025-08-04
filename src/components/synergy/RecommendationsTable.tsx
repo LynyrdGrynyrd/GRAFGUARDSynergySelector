@@ -7,12 +7,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from '@/components/ui/button';
-import { ArrowUpDown, Inbox } from 'lucide-react';
+import { ArrowUpDown, Inbox, Star } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 type SortKey = keyof Omit<GrafguardGrade, 'description' | 'expansion400C' | 'expansion800C'>;
 
 interface RecommendationsTableProps {
   recommendedGrades: GrafguardGrade[];
+  bestMatchGradeName: string | null;
   hoveredGrade: string | null;
   setHoveredGrade: (grade: string | null) => void;
   unit: 'C' | 'F';
@@ -21,7 +23,7 @@ interface RecommendationsTableProps {
   onGradeClick: (grade: GrafguardGrade) => void;
 }
 
-export function RecommendationsTable({ recommendedGrades, hoveredGrade, setHoveredGrade, unit, sortConfig, requestSort, onGradeClick }: RecommendationsTableProps) {
+export function RecommendationsTable({ recommendedGrades, bestMatchGradeName, hoveredGrade, setHoveredGrade, unit, sortConfig, requestSort, onGradeClick }: RecommendationsTableProps) {
   if (recommendedGrades.length === 0) {
     return (
       <div className="text-center py-12 px-6 bg-gray-50 rounded-lg">
@@ -89,26 +91,47 @@ export function RecommendationsTable({ recommendedGrades, hoveredGrade, setHover
             </tr>
           </thead>
           <tbody>
-            {recommendedGrades.map((grade, index) => (
-              <tr
-                key={grade.name}
-                className={cn(
-                  'border-b transition-colors duration-150 ease-in-out cursor-pointer',
-                  'hover:bg-neograf-blue/10',
-                  { 'bg-gray-50': index % 2 !== 0 && hoveredGrade !== grade.name },
-                  { 'bg-neograf-blue/20 ring-1 ring-neograf-blue/50': hoveredGrade === grade.name }
-                )}
-                onMouseEnter={() => setHoveredGrade(grade.name)}
-                onMouseLeave={() => setHoveredGrade(null)}
-                onClick={() => onGradeClick(grade)}
-              >
-                <td className="p-2 font-medium text-neograf-blue">{grade.name}</td>
-                <td className="p-2">{grade.particleSize} ({grade.mesh} Mesh)</td>
-                <td className="p-2">{unit === 'C' ? grade.onsetTempC : cToF(grade.onsetTempC)}°{unit}</td>
-                <td className="p-2">{grade.chemistry}</td>
-                <td className="p-2">{grade.expansion}</td>
-              </tr>
-            ))}
+            {recommendedGrades.map((grade, index) => {
+              const isBestMatch = grade.name === bestMatchGradeName;
+              return (
+                <tr
+                  key={grade.name}
+                  className={cn(
+                    'border-b transition-colors duration-150 ease-in-out cursor-pointer',
+                    'hover:bg-neograf-blue/10',
+                    { 'bg-gray-50': index % 2 !== 0 && hoveredGrade !== grade.name && !isBestMatch },
+                    { 'bg-neograf-blue/20 ring-1 ring-neograf-blue/50': hoveredGrade === grade.name },
+                    { 'bg-green-100/50 border-l-4 border-l-neograf-green': isBestMatch }
+                  )}
+                  onMouseEnter={() => setHoveredGrade(grade.name)}
+                  onMouseLeave={() => setHoveredGrade(null)}
+                  onClick={() => onGradeClick(grade)}
+                >
+                  <td className="p-2 font-medium text-neograf-blue">
+                    <div className="flex items-center gap-2">
+                      <span>{grade.name}</span>
+                      {isBestMatch && (
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Badge variant="secondary" className="bg-neograf-green text-white hover:bg-neograf-green/90">
+                              <Star className="h-3 w-3 mr-1" />
+                              Best Match
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Optimal balance of onset temperature for the selected synergist.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                  </td>
+                  <td className="p-2">{grade.particleSize} ({grade.mesh} Mesh)</td>
+                  <td className="p-2">{unit === 'C' ? grade.onsetTempC : cToF(grade.onsetTempC)}°{unit}</td>
+                  <td className="p-2">{grade.chemistry}</td>
+                  <td className="p-2">{grade.expansion}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

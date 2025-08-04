@@ -19,11 +19,13 @@ export function SynergySelector() {
     sortConfig,
     selectedGrade,
     isModalOpen,
+    resultsRef,
     sortedPolymers,
     sortedSynergists,
     selectedPolymer,
     selectedSynergist,
     recommendedGrades,
+    bestMatchGradeName,
     setHoveredGrade,
     requestSort,
     handlePolymerChange,
@@ -53,17 +55,20 @@ export function SynergySelector() {
           resetTool={resetTool}
         />
         
-        <ResultsDisplay
-          polymer={selectedPolymer}
-          synergist={selectedSynergist}
-          recommendedGrades={recommendedGrades}
-          hoveredGrade={hoveredGrade}
-          setHoveredGrade={setHoveredGrade}
-          unit={unit}
-          sortConfig={sortConfig}
-          requestSort={requestSort}
-          onGradeClick={handleGradeClick}
-        />
+        <div ref={resultsRef}>
+          <ResultsDisplay
+            polymer={selectedPolymer}
+            synergist={selectedSynergist}
+            recommendedGrades={recommendedGrades}
+            bestMatchGradeName={bestMatchGradeName}
+            hoveredGrade={hoveredGrade}
+            setHoveredGrade={setHoveredGrade}
+            unit={unit}
+            sortConfig={sortConfig}
+            requestSort={requestSort}
+            onGradeClick={handleGradeClick}
+          />
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <Guidelines />

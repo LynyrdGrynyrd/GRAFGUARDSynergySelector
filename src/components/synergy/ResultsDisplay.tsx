@@ -8,6 +8,7 @@ interface ResultsDisplayProps {
   polymer: Polymer | null;
   synergist: Synergist | null;
   recommendedGrades: GrafguardGrade[];
+  bestMatchGradeName: string | null;
   hoveredGrade: string | null;
   setHoveredGrade: (grade: string | null) => void;
   unit: 'C' | 'F';
@@ -16,7 +17,7 @@ interface ResultsDisplayProps {
   onGradeClick: (grade: GrafguardGrade) => void;
 }
 
-export function ResultsDisplay({ polymer, synergist, recommendedGrades, hoveredGrade, setHoveredGrade, unit, sortConfig, requestSort, onGradeClick }: ResultsDisplayProps) {
+export function ResultsDisplay({ polymer, synergist, recommendedGrades, bestMatchGradeName, hoveredGrade, setHoveredGrade, unit, sortConfig, requestSort, onGradeClick }: ResultsDisplayProps) {
   
   const getTitle = () => {
     if (polymer && synergist && synergist.abbr !== 'None') {
@@ -63,6 +64,7 @@ export function ResultsDisplay({ polymer, synergist, recommendedGrades, hoveredG
           <div className="text-neograf-dark-gray overflow-x-auto">
             <RecommendationsTable
               recommendedGrades={recommendedGrades}
+              bestMatchGradeName={bestMatchGradeName}
               hoveredGrade={hoveredGrade}
               setHoveredGrade={setHoveredGrade}
               unit={unit}

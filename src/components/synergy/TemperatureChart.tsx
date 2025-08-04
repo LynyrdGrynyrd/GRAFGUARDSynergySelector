@@ -36,6 +36,10 @@ export function TemperatureChart({ polymer, synergist, recommendedGrades, hovere
     ? [100, 150, 200, 250, 300, 350, 400].map(c => cToF(c))
     : [100, 150, 200, 250, 300, 350, 400];
 
+  // Optimal zone is the synergist's decomposition range
+  const optimalZoneStart = synergist.abbr !== 'None' ? synergistStart : -1;
+  const optimalZoneWidth = synergist.abbr !== 'None' ? synergistWidth : -1;
+
   return (
     <div className="bg-gray-50 p-4 rounded-lg relative overflow-x-auto">
       <div className="flex justify-between text-xs text-gray-500 mb-2 px-2">
@@ -48,6 +52,18 @@ export function TemperatureChart({ polymer, synergist, recommendedGrades, hovere
         <div className="absolute top-0 h-full w-px bg-gray-300" style={{ left: '50%' }}></div>
         <div className="absolute top-0 h-full w-px bg-gray-300" style={{ left: '66.66%' }}></div>
         <div className="absolute top-0 h-full w-px bg-gray-300" style={{ left: '83.33%' }}></div>
+
+        {/* Optimal Activation Zone */}
+        {optimalZoneStart > -1 && (
+          <div 
+            className="absolute top-0 h-full bg-green-500/10 border-x border-dashed border-neograf-green/50"
+            style={{ left: `${optimalZoneStart}%`, width: `${optimalZoneWidth}%` }}
+          >
+            <div className="absolute -bottom-5 text-xs text-neograf-green font-semibold transform -translate-x-1/2 whitespace-nowrap" style={{ left: '50%' }}>
+              Optimal Activation Zone
+            </div>
+          </div>
+        )}
 
         {/* Chart Bars Container */}
         <div className="absolute w-full h-full top-0 left-0">

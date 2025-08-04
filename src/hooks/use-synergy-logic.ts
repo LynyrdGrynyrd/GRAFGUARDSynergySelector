@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { synergyData } from '@/lib/data';
 import { GrafguardGrade } from '@/types';
 
@@ -12,6 +12,7 @@ export function useSynergyLogic() {
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'ascending' | 'descending' } | null>({ key: 'name', direction: 'ascending' });
   const [selectedGrade, setSelectedGrade] = useState<GrafguardGrade | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const sortedPolymers = useMemo(() => 
     [...synergyData.polymers].sort((a, b) => a.name.localeCompare(b.name)), 
@@ -34,8 +35,9 @@ export function useSynergyLogic() {
     [synergistId]
   );
 
-  const recommendedGrades = useMemo(() => {
+  const { recommendedGrades, bestMatchGradeName } = useMemo(() => {
     let available: GrafguardGrade[];
+    let bestMatch: string | null = null;
 
     if (!selectedPolymer) {
       available = [...synergyData.grafguardGrades];
@@ -43,9 +45,17 @@ export function useSynergyLogic() {
       available = synergyData.grafguardGrades.filter(grade => grade.onsetTempC >= selectedPolymer.processingTempMaxC);
       
       if (selectedSynergist && synergistId && synergistId !== 'none') {
-        available = available.filter(grade => 
+        const synergisticGrades = available.filter(grade => 
           grade.onsetTempC >= selectedSynergist.decompMinC && grade.onsetTempC <= selectedSynergist.decompMaxC
         );
+        
+        if (synergisticGrades.length > 0) {
+          // Find the best match: lowest onset temp within the synergistic range
+          bestMatch = synergisticGrades.reduce((best, current) => {
+            return current.onsetTempC < best.onsetTempC ? current : best;
+          }).name;
+        }
+        available = synergisticGrades;
       }
     }
 
@@ -67,7 +77,7 @@ export function useSynergyLogic() {
       });
     }
     
-    return available;
+    return { recommendedGrades: available, bestMatchGradeName: bestMatch };
   }, [selectedPolymer, selectedSynergist, synergistId, sortConfig]);
 
   const requestSort = (key: SortKey) => {
@@ -81,6 +91,9 @@ export function useSynergyLogic() {
   const handlePolymerChange = (value: string) => {
     setPolymerId(value);
     setSynergistId('');
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const handleSynergistChange = (value: string) => {
@@ -115,6 +128,7 @@ export function useSynergyLogic() {
     sortConfig,
     selectedGrade,
     isModalOpen,
+    resultsRef,
     
     // Derived State
     sortedPolymers,
@@ -122,6 +136,7 @@ export function useSynergyLogic() {
     selectedPolymer,
     selectedSynergist,
     recommendedGrades,
+    bestMatchGradeName,
 
     // State Setters & Handlers
     setHoveredGrade,
