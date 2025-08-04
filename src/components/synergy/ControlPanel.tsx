@@ -32,6 +32,7 @@ export function ControlPanel({
 }: ControlPanelProps) {
   return (
     <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+      <h2 className="text-xl font-semibold text-neograf-dark-gray mb-4 border-b pb-3">Selection Controls</h2>
       <div className="space-y-6">
         <div>
           <label htmlFor="polymer-select" className="block text-sm font-medium mb-1">Step 1: Select Your Polymer System</label>

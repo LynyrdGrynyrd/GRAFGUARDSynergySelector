@@ -7,7 +7,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from '@/components/ui/button';
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown, Inbox } from 'lucide-react';
 
 type SortKey = keyof Omit<GrafguardGrade, 'description' | 'expansion400C' | 'expansion800C'>;
 
@@ -23,7 +23,15 @@ interface RecommendationsTableProps {
 
 export function RecommendationsTable({ recommendedGrades, hoveredGrade, setHoveredGrade, unit, sortConfig, requestSort, onGradeClick }: RecommendationsTableProps) {
   if (recommendedGrades.length === 0) {
-    return <p className="text-neograf-blue">No optimal GRAFGUARD® grades align with this synergist's temperature range. Consider an alternative synergist.</p>;
+    return (
+      <div className="text-center py-12 px-6 bg-gray-50 rounded-lg">
+        <Inbox className="mx-auto h-12 w-12 text-gray-400" />
+        <h3 className="mt-2 text-lg font-medium text-gray-900">No Matching Grades Found</h3>
+        <p className="mt-1 text-sm text-gray-500">
+          No GRAFGUARD® grades align with the selected criteria. Try adjusting the polymer or synergist.
+        </p>
+      </div>
+    );
   }
 
   const getSortIcon = (key: SortKey) => {
@@ -85,9 +93,10 @@ export function RecommendationsTable({ recommendedGrades, hoveredGrade, setHover
               <tr
                 key={grade.name}
                 className={cn(
-                  'border-t cursor-pointer hover:bg-blue-50 transition-colors',
-                  { 'bg-gray-50': index % 2 !== 0 },
-                  { 'highlight-row': hoveredGrade === grade.name }
+                  'border-b transition-colors duration-150 ease-in-out cursor-pointer',
+                  'hover:bg-neograf-blue/10',
+                  { 'bg-gray-50': index % 2 !== 0 && hoveredGrade !== grade.name },
+                  { 'bg-neograf-blue/20 ring-1 ring-neograf-blue/50': hoveredGrade === grade.name }
                 )}
                 onMouseEnter={() => setHoveredGrade(grade.name)}
                 onMouseLeave={() => setHoveredGrade(null)}

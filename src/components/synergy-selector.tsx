@@ -122,6 +122,7 @@ export function SynergySelector() {
       
       <div className="mt-8 space-y-8">
         <EducationalSection />
+        
         <ControlPanel
           polymerId={polymerId}
           synergistId={synergistId}
@@ -133,6 +134,7 @@ export function SynergySelector() {
           onUnitChange={handleUnitChange}
           resetTool={resetTool}
         />
+        
         <ResultsDisplay
           polymer={selectedPolymer}
           synergist={selectedSynergist}
@@ -144,8 +146,11 @@ export function SynergySelector() {
           requestSort={requestSort}
           onGradeClick={handleGradeClick}
         />
-        <Guidelines />
-        <Resources />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <Guidelines />
+          <Resources />
+        </div>
       </div>
 
       <Footer />
