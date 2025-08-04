@@ -119,38 +119,33 @@ export function SynergySelector() {
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <Header />
-      <EducationalSection />
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-        <aside className="lg:col-span-1 space-y-8">
-          <ControlPanel
-            polymerId={polymerId}
-            synergistId={synergistId}
-            unit={unit}
-            sortedPolymers={sortedPolymers}
-            sortedSynergists={sortedSynergists}
-            handlePolymerChange={handlePolymerChange}
-            handleSynergistChange={handleSynergistChange}
-            onUnitChange={handleUnitChange}
-            resetTool={resetTool}
-          />
-          <Guidelines />
-          <Resources />
-        </aside>
-
-        <main className="lg:col-span-2">
-          <ResultsDisplay
-            polymer={selectedPolymer}
-            synergist={selectedSynergist}
-            recommendedGrades={recommendedGrades}
-            hoveredGrade={hoveredGrade}
-            setHoveredGrade={setHoveredGrade}
-            unit={unit}
-            sortConfig={sortConfig}
-            requestSort={requestSort}
-            onGradeClick={handleGradeClick}
-          />
-        </main>
+      
+      <div className="mt-8 space-y-8">
+        <EducationalSection />
+        <ControlPanel
+          polymerId={polymerId}
+          synergistId={synergistId}
+          unit={unit}
+          sortedPolymers={sortedPolymers}
+          sortedSynergists={sortedSynergists}
+          handlePolymerChange={handlePolymerChange}
+          handleSynergistChange={handleSynergistChange}
+          onUnitChange={handleUnitChange}
+          resetTool={resetTool}
+        />
+        <ResultsDisplay
+          polymer={selectedPolymer}
+          synergist={selectedSynergist}
+          recommendedGrades={recommendedGrades}
+          hoveredGrade={hoveredGrade}
+          setHoveredGrade={setHoveredGrade}
+          unit={unit}
+          sortConfig={sortConfig}
+          requestSort={requestSort}
+          onGradeClick={handleGradeClick}
+        />
+        <Guidelines />
+        <Resources />
       </div>
 
       <Footer />
