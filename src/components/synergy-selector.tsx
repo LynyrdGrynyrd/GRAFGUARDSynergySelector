@@ -49,14 +49,21 @@ export function SynergySelector() {
   );
 
   const recommendedGrades = useMemo(() => {
-    if (!selectedPolymer) return [];
+    let available: GrafguardGrade[];
 
-    let available = synergyData.grafguardGrades.filter(grade => grade.onsetTempC >= selectedPolymer.processingTempMaxC);
-    
-    if (selectedSynergist && synergistId !== 'none') {
-      available = available.filter(grade => 
-        grade.onsetTempC >= selectedSynergist.decompMinC && grade.onsetTempC <= selectedSynergist.decompMaxC
-      );
+    if (!selectedPolymer) {
+      // No polymer selected, show all grades.
+      available = [...synergyData.grafguardGrades];
+    } else {
+      // Polymer selected, filter by processing temp.
+      available = synergyData.grafguardGrades.filter(grade => grade.onsetTempC >= selectedPolymer.processingTempMaxC);
+      
+      // If synergist is also selected (and not 'none'), filter further.
+      if (selectedSynergist && synergistId && synergistId !== 'none') {
+        available = available.filter(grade => 
+          grade.onsetTempC >= selectedSynergist.decompMinC && grade.onsetTempC <= selectedSynergist.decompMaxC
+        );
+      }
     }
 
     if (sortConfig) {
@@ -158,27 +165,21 @@ export function SynergySelector() {
           </Button>
         </div>
 
-        {polymerId && synergistId ? (
-          <div className="fade-in">
-            <ResultsDisplay
-              polymer={selectedPolymer!}
-              synergist={selectedSynergist!}
-              recommendedGrades={recommendedGrades}
-              hoveredGrade={hoveredGrade}
-              setHoveredGrade={setHoveredGrade}
-              unit={unit}
-              sortConfig={sortConfig}
-              requestSort={requestSort}
-              onGradeClick={handleGradeClick}
-            />
-            <Guidelines />
-            <Resources />
-          </div>
-        ) : (
-          <div className="text-center py-10 text-gray-500">
-            <p>{!polymerId ? 'Please make your selections above to see recommendations.' : 'Please select a synergist to continue.'}</p>
-          </div>
-        )}
+        <div className="fade-in">
+          <ResultsDisplay
+            polymer={selectedPolymer}
+            synergist={selectedSynergist}
+            recommendedGrades={recommendedGrades}
+            hoveredGrade={hoveredGrade}
+            setHoveredGrade={setHoveredGrade}
+            unit={unit}
+            sortConfig={sortConfig}
+            requestSort={requestSort}
+            onGradeClick={handleGradeClick}
+          />
+          <Guidelines />
+          <Resources />
+        </div>
       </div>
       <Footer />
       <GradeDetailModal
