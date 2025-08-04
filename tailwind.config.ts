@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import { fontFamily } from "tailwindcss/defaultTheme";
 
 export default {
     darkMode: ["class"],
@@ -9,7 +10,13 @@ export default {
   ],
   theme: {
   	extend: {
+      fontFamily: {
+        sans: ["var(--font-source-sans)", ...fontFamily.sans],
+      },
   		colors: {
+        'neograf-blue': '#005eb8',
+        'neograf-green': '#2f855a',
+        'neograf-dark-gray': '#2d3748',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
