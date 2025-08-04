@@ -35,12 +35,12 @@ export function SynergySelector() {
   );
 
   const selectedPolymer = useMemo(() => 
-    polymerId ? synergyData.polymers.find(p => p.id === polymerId) : null,
+    synergyData.polymers.find(p => p.id === polymerId) ?? null,
     [polymerId]
   );
 
   const selectedSynergist = useMemo(() =>
-    synergistId ? synergyData.synergists[synergistId] : null,
+    synergyData.synergists[synergistId] ?? null,
     [synergistId]
   );
 
