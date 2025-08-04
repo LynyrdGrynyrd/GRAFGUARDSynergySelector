@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { synergyData } from '@/lib/data';
 import { GrafguardGrade } from '@/types';
 
@@ -12,7 +12,6 @@ export function useSynergyLogic() {
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'ascending' | 'descending' } | null>({ key: 'name', direction: 'ascending' });
   const [selectedGrade, setSelectedGrade] = useState<GrafguardGrade | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const resultsRef = useRef<HTMLDivElement>(null);
 
   const sortedPolymers = useMemo(() => 
     [...synergyData.polymers].sort((a, b) => a.name.localeCompare(b.name)), 
@@ -91,9 +90,6 @@ export function useSynergyLogic() {
   const handlePolymerChange = (value: string) => {
     setPolymerId(value);
     setSynergistId('');
-    setTimeout(() => {
-      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
   };
 
   const handleSynergistChange = (value: string) => {
@@ -128,7 +124,6 @@ export function useSynergyLogic() {
     sortConfig,
     selectedGrade,
     isModalOpen,
-    resultsRef,
     
     // Derived State
     sortedPolymers,

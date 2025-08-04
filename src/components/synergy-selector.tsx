@@ -19,7 +19,6 @@ export function SynergySelector() {
     sortConfig,
     selectedGrade,
     isModalOpen,
-    resultsRef,
     sortedPolymers,
     sortedSynergists,
     selectedPolymer,
@@ -55,7 +54,7 @@ export function SynergySelector() {
           resetTool={resetTool}
         />
         
-        <div ref={resultsRef}>
+        <div>
           <ResultsDisplay
             polymer={selectedPolymer}
             synergist={selectedSynergist}
