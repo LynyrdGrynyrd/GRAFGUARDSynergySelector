@@ -1,5 +1,5 @@
 import { Polymer, Synergist, GrafguardGrade } from '@/types';
-import { cn } from '@/lib/utils';
+import { cn, cToF } from '@/lib/utils';
 
 interface TemperatureChartProps {
   polymer: Polymer;
@@ -7,13 +7,22 @@ interface TemperatureChartProps {
   recommendedGrades: GrafguardGrade[];
   hoveredGrade: string | null;
   setHoveredGrade: (grade: string | null) => void;
+  unit: 'C' | 'F';
 }
 
-export function TemperatureChart({ polymer, synergist, recommendedGrades, hoveredGrade, setHoveredGrade }: TemperatureChartProps) {
-  const chartMinTemp = 100;
-  const chartMaxTemp = 400;
+export function TemperatureChart({ polymer, synergist, recommendedGrades, hoveredGrade, setHoveredGrade, unit }: TemperatureChartProps) {
+  const isFahrenheit = unit === 'F';
+  const chartMinTempC = 100;
+  const chartMaxTempC = 400;
+
+  const chartMinTemp = isFahrenheit ? cToF(chartMinTempC) : chartMinTempC;
+  const chartMaxTemp = isFahrenheit ? cToF(chartMaxTempC) : chartMaxTempC;
   const tempRange = chartMaxTemp - chartMinTemp;
-  const getPosition = (temp: number) => Math.max(0, Math.min(100, ((temp - chartMinTemp) / tempRange) * 100));
+
+  const getPosition = (tempC: number) => {
+    const temp = isFahrenheit ? cToF(tempC) : tempC;
+    return Math.max(0, Math.min(100, ((temp - chartMinTemp) / tempRange) * 100));
+  };
 
   const polymerStart = getPosition(polymer.processingTempMinC);
   const polymerWidth = getPosition(polymer.processingTempMaxC) - polymerStart;
@@ -23,10 +32,14 @@ export function TemperatureChart({ polymer, synergist, recommendedGrades, hovere
 
   const sortedRecommended = [...recommendedGrades].sort((a, b) => a.onsetTempC - b.onsetTempC);
 
+  const tempLabels = isFahrenheit
+    ? [100, 150, 200, 250, 300, 350, 400].map(c => cToF(c))
+    : [100, 150, 200, 250, 300, 350, 400];
+
   return (
     <div className="bg-gray-50 p-4 rounded-lg relative overflow-x-auto">
       <div className="flex justify-between text-xs text-gray-500 mb-2 px-2">
-        <span>100°C</span><span>150°C</span><span>200°C</span><span>250°C</span><span>300°C</span><span>350°C</span><span>400°C</span>
+        {tempLabels.map(t => <span key={t}>{t}°{unit}</span>)}
       </div>
       <div className="relative h-48 bg-gradient-to-r from-blue-100 via-yellow-50 to-red-100 rounded-md">
         {/* Grid Lines */}
@@ -61,7 +74,7 @@ export function TemperatureChart({ polymer, synergist, recommendedGrades, hovere
                 'grade-marker absolute top-16 w-1 h-24 rounded-full transform -translate-x-1/2 bg-neograf-green recommended-marker',
                 { 'highlight-marker': hoveredGrade === grade.name }
               )}
-              title={`${grade.name} (Onset: ${grade.onsetTempC}°C)`}
+              title={`${grade.name} (Onset: ${isFahrenheit ? cToF(grade.onsetTempC) : grade.onsetTempC}°${unit})`}
               onMouseEnter={() => setHoveredGrade(grade.name)}
               onMouseLeave={() => setHoveredGrade(null)}
             >

@@ -2,15 +2,20 @@ import { Polymer, Synergist, GrafguardGrade } from '@/types';
 import { TemperatureChart } from './TemperatureChart';
 import { RecommendationsTable } from './RecommendationsTable';
 
+type SortKey = keyof GrafguardGrade;
+
 interface ResultsDisplayProps {
   polymer: Polymer;
   synergist: Synergist;
   recommendedGrades: GrafguardGrade[];
   hoveredGrade: string | null;
   setHoveredGrade: (grade: string | null) => void;
+  unit: 'C' | 'F';
+  sortConfig: { key: SortKey; direction: 'ascending' | 'descending' } | null;
+  requestSort: (key: SortKey) => void;
 }
 
-export function ResultsDisplay({ polymer, synergist, recommendedGrades, hoveredGrade, setHoveredGrade }: ResultsDisplayProps) {
+export function ResultsDisplay({ polymer, synergist, recommendedGrades, hoveredGrade, setHoveredGrade, unit, sortConfig, requestSort }: ResultsDisplayProps) {
   const title = synergist.abbr === 'None' ? "Available GRAFGUARD® Grades" : "Optimal GRAFGUARD® Grades";
 
   return (
@@ -25,6 +30,7 @@ export function ResultsDisplay({ polymer, synergist, recommendedGrades, hoveredG
           recommendedGrades={recommendedGrades}
           hoveredGrade={hoveredGrade}
           setHoveredGrade={setHoveredGrade}
+          unit={unit}
         />
       </div>
 
@@ -36,6 +42,9 @@ export function ResultsDisplay({ polymer, synergist, recommendedGrades, hoveredG
               recommendedGrades={recommendedGrades}
               hoveredGrade={hoveredGrade}
               setHoveredGrade={setHoveredGrade}
+              unit={unit}
+              sortConfig={sortConfig}
+              requestSort={requestSort}
             />
           </div>
         </div>

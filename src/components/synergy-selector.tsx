@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { synergyData } from '@/lib/data';
+import { GrafguardGrade } from '@/types';
 import { Header } from '@/components/synergy/Header';
 import { EducationalSection } from '@/components/synergy/EducationalSection';
 import { Guidelines } from '@/components/synergy/Guidelines';
@@ -10,11 +11,17 @@ import { Footer } from '@/components/synergy/Footer';
 import { ResultsDisplay } from '@/components/synergy/ResultsDisplay';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+
+type SortKey = keyof GrafguardGrade;
 
 export function SynergySelector() {
   const [polymerId, setPolymerId] = useState<string>('');
   const [synergistId, setSynergistId] = useState<string>('');
   const [hoveredGrade, setHoveredGrade] = useState<string | null>(null);
+  const [unit, setUnit] = useState<'C' | 'F'>('C');
+  const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'ascending' | 'descending' } | null>({ key: 'name', direction: 'ascending' });
 
   const sortedPolymers = useMemo(() => 
     [...synergyData.polymers].sort((a, b) => a.name.localeCompare(b.name)), 
@@ -37,21 +44,42 @@ export function SynergySelector() {
     [synergistId]
   );
 
-  const { recommendedGrades } = useMemo(() => {
-    if (!selectedPolymer) return { recommendedGrades: [] };
+  const recommendedGrades = useMemo(() => {
+    if (!selectedPolymer) return [];
 
-    const available = synergyData.grafguardGrades.filter(grade => grade.onsetTempC >= selectedPolymer.processingTempMaxC);
+    let available = synergyData.grafguardGrades.filter(grade => grade.onsetTempC >= selectedPolymer.processingTempMaxC);
     
-    if (!selectedSynergist || synergistId === 'none') {
-      return { recommendedGrades: available };
+    if (selectedSynergist && synergistId !== 'none') {
+      available = available.filter(grade => 
+        grade.onsetTempC >= selectedSynergist.decompMinC && grade.onsetTempC <= selectedSynergist.decompMaxC
+      );
     }
 
-    const recommended = available.filter(grade => 
-      grade.onsetTempC >= selectedSynergist.decompMinC && grade.onsetTempC <= selectedSynergist.decompMaxC
-    );
+    if (sortConfig) {
+      available.sort((a, b) => {
+        const aValue = a[sortConfig.key];
+        const bValue = b[sortConfig.key];
+
+        if (aValue < bValue) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
     
-    return { recommendedGrades: recommended };
-  }, [selectedPolymer, selectedSynergist, synergistId]);
+    return available;
+  }, [selectedPolymer, selectedSynergist, synergistId, sortConfig]);
+
+  const requestSort = (key: SortKey) => {
+    let direction: 'ascending' | 'descending' = 'ascending';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
 
   const handlePolymerChange = (value: string) => {
     setPolymerId(value);
@@ -74,7 +102,7 @@ export function SynergySelector() {
 
       <div className="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow-lg border border-gray-200">
         {/* Step 1 & 2: User Inputs */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 items-end">
           <div>
             <label htmlFor="polymer-select" className="block text-sm font-medium mb-1">Step 1: Select Your Polymer System</label>
             <Select onValueChange={handlePolymerChange} value={polymerId}>
@@ -93,7 +121,7 @@ export function SynergySelector() {
             <Select onValueChange={handleSynergistChange} value={synergistId} disabled={!polymerId}>
               <SelectTrigger id="synergist-select" className="w-full p-3 h-auto bg-gray-100 border-gray-300 focus:ring-2 ring-neograf-blue focus:border-neograf-blue transition">
                 <SelectValue placeholder="-- Please select --" />
-              </SelectTrigger>
+              </Trigger>
               <SelectContent>
                 {sortedSynergists.map(([key, synergist]) => (
                   <SelectItem key={key} value={key}>{synergist.name}</SelectItem>
@@ -102,7 +130,12 @@ export function SynergySelector() {
             </Select>
           </div>
         </div>
-        <div className="text-center mb-8">
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="temp-unit" className={cn({ 'font-bold': unit === 'C' })}>°C</Label>
+            <Switch id="temp-unit" checked={unit === 'F'} onCheckedChange={(checked) => setUnit(checked ? 'F' : 'C')} />
+            <Label htmlFor="temp-unit" className={cn({ 'font-bold': unit === 'F' })}>°F</Label>
+          </div>
           <Button onClick={resetTool} className="px-4 py-2 bg-neograf-dark-gray text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition shadow">
             Reset Selections
           </Button>
@@ -117,6 +150,9 @@ export function SynergySelector() {
               recommendedGrades={recommendedGrades}
               hoveredGrade={hoveredGrade}
               setHoveredGrade={setHoveredGrade}
+              unit={unit}
+              sortConfig={sortConfig}
+              requestSort={requestSort}
             />
             <Guidelines />
             <Resources />
