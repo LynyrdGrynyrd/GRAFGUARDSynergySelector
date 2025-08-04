@@ -26,7 +26,7 @@ export function CallToAction() {
         </Button>
       </div>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-x-6 gap-y-2 text-sm">
-        <a href="https://www.neograf.com/wp-content/uploads/2023/04/grafguard-sell-sheet.pdf" target="_blank" rel="noopener noreferrer" className="text-neograf-blue hover:underline transition flex items-center gap-1">
+        <a href="https://www.neograf.com/wp-content/uploads/2023/04/grafguard-tds-226.pdf" target="_blank" rel="noopener noreferrer" className="text-neograf-blue hover:underline transition flex items-center gap-1">
           <Book className="h-4 w-4" /> View Technical Data Sheet
         </a>
         <a href="https://www.neograf.com/wp-content/uploads/2023/04/grafguard-sell-sheet.pdf" target="_blank" rel="noopener noreferrer" className="text-neograf-blue hover:underline transition flex items-center gap-1">

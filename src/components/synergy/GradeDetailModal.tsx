@@ -57,7 +57,7 @@ export function GradeDetailModal({ grade, isOpen, onClose }: GradeDetailModalPro
         <div className="mt-6 pt-4 border-t">
             <h4 className="font-semibold text-md mb-3">Next Steps & Resources</h4>
             <div className="flex flex-col sm:flex-row sm:flex-wrap gap-x-6 gap-y-2 text-sm">
-                <a href="https://www.neograf.com/wp-content/uploads/2023/04/grafguard-sell-sheet.pdf" target="_blank" rel="noopener noreferrer" className="text-neograf-blue hover:underline transition">View Technical Data Sheet</a>
+                <a href="https://www.neograf.com/wp-content/uploads/2023/04/grafguard-tds-226.pdf" target="_blank" rel="noopener noreferrer" className="text-neograf-blue hover:underline transition">View Technical Data Sheet</a>
                 <a href="https://neograf.com/contact-us/" target="_blank" rel="noopener noreferrer" className="text-neograf-blue hover:underline transition">Contact an Expert</a>
                 <a href="https://neograf.live.itonicsit.de/insights" target="_blank" rel="noopener noreferrer" className="font-semibold text-neograf-blue hover:underline transition">Submit Innovation Idea</a>
             </div>
